@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const session = require('express-session');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const bodyParser = require('body-parser');
@@ -20,20 +19,11 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Sessions
-if (!process.env.SESSION_SECRET) {
-  console.error('SESSION_SECRET is not defined in .env');
-  process.exit(1);
-}
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
+
+
 
 // Passport OAuth
 app.use(passport.initialize());
-app.use(passport.session());
 
 passport.use(new GitHubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,
