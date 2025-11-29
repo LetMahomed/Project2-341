@@ -1,111 +1,47 @@
-const { ObjectId } = require("mongodb");
+const Pet = require('../models/pets');
+const { validationResult } = require('express-validator');
 
-// GET ALL
-const getAllPets = async (req, res) => {
+exports.getAllPets = async () => {
   try {
-    const result = await mongodb.getDb().db().collection("pets").find();
-    result.toArray().then((lists) => {
-      res.setHeader("Content-Type", "application/json");
-      res.status(200).json(lists);
-    });
+    return await Pet.find();
   } catch (err) {
-    res.status(500).json(err);
+    throw new Error(err.message);
   }
 };
 
-// GET SINGLE
-const getSinglePet = async (req, res) => {
+exports.getPetById = async (id) => {
   try {
-    const petId = new ObjectId(req.params.id);
-    const result = await mongodb
-      .getDb()
-      .db()
-      .collection("pets")
-      .find({ _id: petId });
-
-    result.toArray().then((lists) => {
-      res.setHeader("Content-Type", "application/json");
-      res.status(200).json(lists[0]);
-    });
+    const pet = await Pet.findById(id);
+    return pet; 
   } catch (err) {
-    res.status(500).json(err);
+    throw new Error(err.message);
   }
 };
 
-// CREATE
-const createPet = async (req, res) => {
+exports.createPet = async (data) => {
+  const pet = new Pet(data);
   try {
-    const pet = {
-      name: req.body.name,
-      age: req.body.age,
-      type: req.body.type,
-      breed: req.body.breed
-    };
-
-    const response = await mongodb.getDb().db().collection("pets").insertOne(pet);
-
-    if (response.acknowledged) {
-      res.status(201).json(response);
-    } else {
-      res.status(500).json("Failed to create pet.");
-    }
+    await pet.save();
+    return pet;
   } catch (err) {
-    res.status(500).json(err);
+    throw new Error(err.message);
   }
 };
 
-// UPDATE
-const updatePet = async (req, res) => {
+exports.updatePet = async (id, data) => {
   try {
-    const petId = new ObjectId(req.params.id);
-
-    const pet = {
-      name: req.body.name,
-      age: req.body.age,
-      type: req.body.type,
-      breed: req.body.breed
-    };
-
-    const response = await mongodb
-      .getDb()
-      .db()
-      .collection("pets")
-      .replaceOne({ _id: petId }, pet);
-
-    if (response.modifiedCount > 0) {
-      res.status(204).send();
-    } else {
-      res.status(500).json("Failed to update pet.");
-    }
+    const pet = await Pet.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    return pet; 
   } catch (err) {
-    res.status(500).json(err);
+    throw new Error(err.message);
   }
 };
 
-// DELETE
-const deletePet = async (req, res) => {
+exports.deletePet = async (id) => {
   try {
-    const petId = new ObjectId(req.params.id);
-    const response = await mongodb
-      .getDb()
-      .db()
-      .collection("pets")
-      .deleteOne({ _id: petId });
-
-    if (response.deletedCount > 0) {
-      res.status(204).send();
-    } else {
-      res.status(500).json("Failed to delete pet.");
-    }
+    const pet = await Pet.findByIdAndDelete(id);
+    return pet; 
   } catch (err) {
-    res.status(500).json(err);
+    throw new Error(err.message);
   }
-};
-
-module.exports = {
-  getAllPets,
-  getSinglePet,
-  createPet,
-  updatePet,
-  deletePet
 };

@@ -1,6 +1,5 @@
-const User = require('../models/user');
+const User = require('../models/owner');
 
-// GET all users
 const getAll = async (req, res) => {
   try {
     const users = await User.find();
@@ -10,7 +9,6 @@ const getAll = async (req, res) => {
   }
 };
 
-// GET one user
 const getSingle = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -23,7 +21,6 @@ const getSingle = async (req, res) => {
   }
 };
 
-// POST create user
 const createUser = async (req, res) => {
   try {
     const user = new User(req.body);
@@ -36,7 +33,6 @@ const createUser = async (req, res) => {
   }
 };
 
-// PUT update user
 const updateUser = async (req, res) => {
   try {
     const updated = await User.findByIdAndUpdate(
@@ -54,7 +50,6 @@ const updateUser = async (req, res) => {
   }
 };
 
-// DELETE user
 const deleteUser = async (req, res) => {
   try {
     const deleted = await User.findByIdAndDelete(req.params.id);

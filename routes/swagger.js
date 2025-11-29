@@ -1,7 +1,23 @@
-const router = require('express').Router();
+const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../swagger.json');
-router.use('/api-docs', swaggerUi.serve);
-router.get('/api-docs', swaggerUi.setup(swaggerDocument));
 
-module.exports = router;
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Pet Project API',
+      version: '1.0.0',
+      description: 'API for managing pets and owners with authentication',
+    },
+    servers: [
+      { url: 'http://localhost:3000', description: 'Local server' }
+    ],
+  },
+  apis: ['./routes/*.js'], 
+};
+
+const specs = swaggerJsdoc(options);
+
+module.exports = (app) => {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+};
